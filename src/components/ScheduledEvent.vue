@@ -2,14 +2,22 @@
   <div
 		class='event'
 		:style='state.eventStyle'
+		draggable
+		@dragstart="startDrag"
+		@mousedown='mouseDown'
 	>
 		{{ scheduledEvent.name }}
+		{{ scheduledEvent.startTime.format('h:mma') }}-{{ scheduledEvent.endTime.format('h:mma') }}
    </div>
 </template>
 
 <script>
 import { reactive, computed } from 'vue'
 import moment from 'moment'
+import { store } from '../store'
+import { useDragAndDrop } from '../logic/drag-and-drop.js'
+import { useResizeEvents } from '../logic/resize-events'
+
 
 const convertTimeToPixels = (t) => {
 	return (t.hour() + t.minute() / 60) * 50
@@ -20,6 +28,8 @@ export default {
 		scheduledEvent: Object
 	},
 	setup (props) {
+		const { startDrag } = useDragAndDrop(props)
+		const { mouseDown } = useResizeEvents(props)
 		const state = reactive({
 			bgColor: computed(() => '#55efc4'),
 			duration: computed(() => {
@@ -36,7 +46,10 @@ export default {
 				}
 			})
 		})
+
     return {
+			mouseDown,
+			startDrag,
 			state
     }
 	}
