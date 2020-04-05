@@ -1,8 +1,13 @@
 <template>
+  <add-event
+    v-if='state.addEventOpen'
+    @close='closePopup'
+  />
   <div id='planner-header'>
     <div id='planner-title'>
       <h2> {{ state.startOfWeek.format('MMMM DD') }} </h2>
       <span> {{ state.startOfWeek.format('YYYY') }} </span>
+      <div class='add-event' @click='state.addEventOpen = true'>Add Event</div>
     </div>
     <div id='planner-days'>
       <div id='planner-nav'>
@@ -39,6 +44,8 @@
 import { ref, reactive, onMUnmounted, onUnmounted } from 'vue'
 import moment from 'moment'
 import DayDisplay from '../components/DayDisplay.vue'
+import AddEvent from '../components/forms/AddEvent.vue'
+
 
 const useCurrentDate = () => {
   const currentDate = ref(moment())
@@ -61,11 +68,13 @@ const useCurrentDate = () => {
 export default {
   components: {
     DayDisplay,
+    AddEvent
   },
   setup () {
     const { currentDate } = useCurrentDate()
 
     const state = reactive({
+      addEventOpen: false,
       startOfWeek: moment().day('Sunday')
     })
 
@@ -76,11 +85,15 @@ export default {
       } else {
         state.startOfWeek = state.startOfWeek.clone().add(7 * dir, 'days')
       }
+    }
 
+    const closePopup = (evt) => {
+      state[evt.name + 'Open'] = false
     }
 
     return {
       changeWeek,
+      closePopup,
       currentDate,
       moment,
       state

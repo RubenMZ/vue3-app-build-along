@@ -61,5 +61,37 @@ class PlannerStore extends Store {
     }
     return false
   }
+
+  addEvent (eventData) {
+    eventData.id = uuid()
+
+    if (this.isTimeAvailable(eventData.id, eventData.startTime, eventData.endTime)) {
+      this.state.scheduledEvents.push(eventData)
+      return true
+    }
+    return false
+  }
+
+  deleteEvent (eventID) {
+    this.state.scheduledEvents = this.state.scheduledEvents.filter(e => {
+      return e.id != eventID
+    })
+  }
+
+  editCalendar (calendarData) {
+    let cal = this.state.calendars.find(c => c.id === calendarData.id)
+
+    if (!cal) {
+      return false
+    }
+
+    if (calendarData.name.trim().length === 0) {
+      cal.name = 'Untitled'
+    } else {
+      cal.name = calendarData.name
+    }
+
+    return true
+  }
 }
 export const store = new PlannerStore();

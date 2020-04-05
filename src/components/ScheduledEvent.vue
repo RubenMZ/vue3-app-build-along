@@ -14,7 +14,6 @@
 <script>
 import { reactive, computed } from 'vue'
 import moment from 'moment'
-import { store } from '../store'
 import { useDragAndDrop } from '../logic/drag-and-drop.js'
 import { useResizeEvents } from '../logic/resize-events'
 
