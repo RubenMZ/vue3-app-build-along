@@ -1,6 +1,7 @@
 <template>
   <div
 		class='event'
+		:class='{"event-shake": scheduledEvent.shake}'
 		:style='state.eventStyle'
 		draggable
 		@dragstart="startDrag"
@@ -15,6 +16,7 @@
 <script>
 import { reactive, computed } from 'vue'
 import moment from 'moment'
+import { store } from '../store'
 import { useDragAndDrop } from '../logic/drag-and-drop.js'
 import { useResizeEvents } from '../logic/resize-events'
 
@@ -31,7 +33,10 @@ export default {
 		const { startDrag } = useDragAndDrop(props)
 		const { mouseDown } = useResizeEvents(props)
 		const state = reactive({
-			bgColor: computed(() => '#55efc4'),
+			bgColor: computed(() => {
+				let calendars = store.getState().calendars
+				return calendars.find(c => c.id === props.scheduledEvent.calendar).color
+			}),
 			duration: computed(() => {
 				const startTime = props.scheduledEvent.startTime
 				const endTime = props.scheduledEvent.endTime
