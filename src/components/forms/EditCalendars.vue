@@ -2,9 +2,24 @@
   <div class='popup-bg'>
     <div class='popup'>
       <div class='popup-header'>
-        
+        <h2> Edit Calendars </h2>
+        <span @click='close'> x </span>
+      
       </div>
       <div class='popup-content'>
+        <div
+          class='edit-calendar'
+          v-for='cal in calendars'
+          :key='cal.i'
+        >
+          <div class='calendar-swatch' :style='{"background-color": cal.color}'/>
+          <input
+            type='text'
+            v-model='cal.name'
+            @change='editCalendar(cal, $event)'
+            placeholder='Untitled'
+          />
+        </div>
         
       </div>
       <div class='popup-footer'>
@@ -14,10 +29,29 @@
 </template>
 
 <script>
-export default {
-  setup () {
-    return {
+import { ref, onMounted } from 'vue'
+import { usePopupLogic } from '../../logic/popup-logic'
+import { store } from '../../store'
 
+export default {
+  setup (props, { emit }) {
+    const { close } = usePopupLogic('editCalendars', emit)
+
+    const calendars = ref([])
+
+    onMounted(() => {
+      calendars.value = JSON.parse(JSON.stringify(store.getState().calendars))
+    })
+
+    const editCalendar = (cal, evt) => {
+      cal.name = evt.target.value
+      store.editCalendar(cal)
+    }
+
+    return {
+      calendars,
+      close,
+      editCalendar
     }
   }
 }

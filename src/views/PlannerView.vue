@@ -1,13 +1,19 @@
 <template>
   <add-event
     v-if='state.addEventOpen'
+    :existing-event='state.existingEvent'
+    @close='closePopup'
+  />
+  <edit-calendars
+    v-if='state.editCalendarsOpen'
     @close='closePopup'
   />
   <div id='planner-header'>
     <div id='planner-title'>
       <h2> {{ state.startOfWeek.format('MMMM DD') }} </h2>
       <span> {{ state.startOfWeek.format('YYYY') }} </span>
-      <div class='add-event' @click='state.addEventOpen = true'>Add Event</div>
+      <div class='add-event' @click='state.addEventOpen = true'> Add Event </div>
+      <div class='edit-calendars' @click='state.editCalendarsOpen = true'> Edit Calendars</div>
     </div>
     <div id='planner-days'>
       <div id='planner-nav'>
@@ -35,7 +41,9 @@
       <day-display
         v-for='i in 7'
         :key='i'
-        :date="state.startOfWeek.clone().add(i - 1, 'days')"/>
+        :date="state.startOfWeek.clone().add(i - 1, 'days')"
+        @editEvent='openEditEvent'
+      />
     </div>
   </div>
 </template>
@@ -45,6 +53,7 @@ import { ref, reactive, onMUnmounted, onUnmounted } from 'vue'
 import moment from 'moment'
 import DayDisplay from '../components/DayDisplay.vue'
 import AddEvent from '../components/forms/AddEvent.vue'
+import EditCalendars from '../components/forms/EditCalendars.vue'
 
 
 const useCurrentDate = () => {
@@ -68,13 +77,16 @@ const useCurrentDate = () => {
 export default {
   components: {
     DayDisplay,
-    AddEvent
+    AddEvent,
+    EditCalendars
   },
   setup () {
     const { currentDate } = useCurrentDate()
 
     const state = reactive({
       addEventOpen: false,
+      editCalendarsOpen: false,
+      existingEvent: null,
       startOfWeek: moment().day('Sunday')
     })
 
@@ -91,11 +103,17 @@ export default {
       state[evt.name + 'Open'] = false
     }
 
+    const openEditEvent = (e) => {
+      state.addEventOpen = true
+      state.existingEvent = e
+    }
+
     return {
       changeWeek,
       closePopup,
       currentDate,
       moment,
+      openEditEvent,
       state
     }
   }

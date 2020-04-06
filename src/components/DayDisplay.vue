@@ -4,6 +4,10 @@
       v-for='e in state.daysEvents'
       :key='e.id'
       :scheduled-event='e'
+      @dragover.prevent
+      @dragenter.prevent
+      @drop='dropEvent'
+      v-bind='$attrs'
     />
     <div
       class='hour'

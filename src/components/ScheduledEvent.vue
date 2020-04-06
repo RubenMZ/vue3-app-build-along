@@ -5,6 +5,7 @@
 		draggable
 		@dragstart="startDrag"
 		@mousedown='mouseDown'
+		@dblclick='editEvent'
 	>
 		{{ scheduledEvent.name }}
 		{{ scheduledEvent.startTime.format('h:mma') }}-{{ scheduledEvent.endTime.format('h:mma') }}
@@ -26,7 +27,7 @@ export default {
 	props: {
 		scheduledEvent: Object
 	},
-	setup (props) {
+	setup (props, { emit }) {
 		const { startDrag } = useDragAndDrop(props)
 		const { mouseDown } = useResizeEvents(props)
 		const state = reactive({
@@ -46,7 +47,12 @@ export default {
 			})
 		})
 
+		const editEvent = () => {
+			emit('editEvent', props.scheduledEvent)
+		}
+
     return {
+			editEvent,
 			mouseDown,
 			startDrag,
 			state
